@@ -64,12 +64,12 @@ def search(Global_Scores_inp):
         print(df)
         print("NEW!!! NEW!!! NEW!!! NEW!!! ")
         print("NEW!!! NEW!!! NEW!!! NEW!!! ")
-        print(f"#{str(int(counter/10)).zfill(5)} | NEW! :) | Best Score: {df.iloc[0, 3]}")
+        print(f"#{str(int(counter/10)).zfill(5)} | NEW! :) | Best Score: {df.iloc[0, 3]}\n")
         Global_Scores_out = Scores
         return Global_Scores_out
     elif Scores == Global_Scores_inp:
         if counter % 10 == 0:
-            print(f"\n#{str(int(counter/10)).zfill(5)} | SAME :( | Best Score: {df.iloc[0, 3]}", end='\r')
+            print(f"#{str(int(counter/10)).zfill(5)} | SAME :( | Best Score: {df.iloc[0, 3]}", end='\r')
 
 counter = 0        
 
