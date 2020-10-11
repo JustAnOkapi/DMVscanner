@@ -53,10 +53,11 @@ def search(Global_Scores_inp):
         Distance.append( location["Distance"])
         Date.append(     location["NextAvailableDate"])
 
+    data = {'Name': Name,'Distance': Distance, "Date": Date, "Score": Scores}
+    df = pd.DataFrame(data)
+    df = df.sort_values(by=["Score"], ascending=False)
+
     if Scores != Global_Scores_inp:
-        data = {'Name': Name,'Distance': Distance, "Date": Date, "Score": Scores}
-        df = pd.DataFrame(data)
-        df.sort_values(by=['Score'])
         print("NEW!!! NEW!!! NEW!!! NEW!!! ")
         print("NEW!!! NEW!!! NEW!!! NEW!!! ")
         print(df)
@@ -65,8 +66,8 @@ def search(Global_Scores_inp):
         Global_Scores_out = Scores
         return Global_Scores_out
     elif Scores == Global_Scores_inp:
-        if counter % 10 = 0:
-            print(f"{counter} | SAME :( {Scores}")
+        if counter % 10 == 0:
+            print(f"#{str(int(counter/10)).zfill(5)} | SAME :( | Best Score: {df.iloc[0, 3]}")
 
 counter = 0        
 
@@ -77,4 +78,4 @@ while True:
         Global_Scores_new = Global_Scores
     if Global_Scores_new != Global_Scores:
         Global_Scores = Global_Scores_new
-    time.sleep(10)
+    time.sleep(1)
