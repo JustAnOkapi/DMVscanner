@@ -43,7 +43,7 @@ def search(Global_Scores_inp):
     for location in list_data:
         Score = 50
         if location["NextAvailableDateYear"] == '2020':
-            Score -= int(location['NextAvailableDateMonth']) * 2 - 20
+            Score -= int(location['NextAvailableDateMonth']) * 2 - 18
         elif location["NextAvailableDateYear"] == '2021':
             Score -= int(location['NextAvailableDateMonth']) * 2 + 5
         Score -= int(location["Distance"])
