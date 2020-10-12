@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import json
 import time
-from playsound import playsound
+import os
 
 
 url = 'https://publicapi.txdpsscheduler.com/api/AvailableLocation'
@@ -65,7 +65,7 @@ def search(Global_Scores_inp):
         print("\n")
         print(df)
         print("\n")
-        playsound("sms-alert-4-daniel_simon.mp3")
+        os.system('"C:/Program Files (x86)/K-Lite Codec Pack/MPC-HC64/mpc-hc64.exe" sms-alert-4-daniel_simon.mp3 /play /close /minimized')
         Global_Scores_out = Scores
         return Global_Scores_out
     elif Scores == Global_Scores_inp:
