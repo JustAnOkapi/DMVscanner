@@ -2,6 +2,8 @@ import requests
 import pandas as pd
 import json
 import time
+from playsound import playsound
+
 
 url = 'https://publicapi.txdpsscheduler.com/api/AvailableLocation'
 payload = {
@@ -43,14 +45,16 @@ def search(Global_Scores_inp):
     for location in list_data:
         Score = 50
         if location["NextAvailableDateYear"] == '2020':
-            Score -= int(location['NextAvailableDateMonth']) * 2 - 18
+            Score -= int( float(location['NextAvailableDateMonth']) * 2 - 20 )
+            Score -= int( float(location['NextAvailableDateDay']) * 6.6 / 100 )
         elif location["NextAvailableDateYear"] == '2021':
-            Score -= int(location['NextAvailableDateMonth']) * 2 + 5
+            Score -= int( float(location['NextAvailableDateMonth']) * 2 + 5 )
+            Score -= int( float(location['NextAvailableDateDay']) * 6 / 100 )
         Score -= int(location["Distance"])
         
         Scores.append(   Score)
         Name.append(     location["Name"])
-        Distance.append( location["Distance"])
+        Distance.append( int(location["Distance"]))
         Date.append(     location["NextAvailableDate"])
 
     data = {'Name': Name,'Distance': Distance, "Date": Date, "Score": Scores}
@@ -61,6 +65,7 @@ def search(Global_Scores_inp):
         print("\n")
         print(df)
         print("\n")
+        playsound("sms-alert-4-daniel_simon.mp3")
         Global_Scores_out = Scores
         return Global_Scores_out
     elif Scores == Global_Scores_inp:
