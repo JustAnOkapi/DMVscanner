@@ -71,9 +71,9 @@ def search(Global_Scores_inp):
     elif Scores == Global_Scores_inp:
         if counter % 10 == 0:
             print(f"#{str(int(counter/10)).zfill(5)} | SAME :( | Best Score: {df.iloc[0, 3]}", end='\r')
-            
 
-counter = 0        
+
+counter = 0
 
 while True: 
     counter += 1
