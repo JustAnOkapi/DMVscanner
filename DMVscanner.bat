@@ -1,1 +1,1 @@
-py "C:\Users\Okapi\Documents\GitHub\DMVscanner\driver.py"
+py "%HOMEPATH%\Documents\GitHub\DMVscanner\driver.py"

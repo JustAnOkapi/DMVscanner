@@ -1,3 +1,10 @@
+# Apply for first time Texas CLP/CDL - TypeId = 71
+# Change, replace or renew Texas DL/Permit - TypeId = 81
+# Class C Road Skills Test - TypeId = 21
+TypeId = 71
+ZipCode = 76036
+
+
 import requests
 import pandas as pd
 import json
@@ -6,9 +13,10 @@ import os
 
 
 url = 'https://publicapi.txdpsscheduler.com/api/AvailableLocation'
+
 payload = {
-  "TypeId": 71,
-  "ZipCode": "76036",
+  "TypeId": TypeId,
+  "ZipCode": f"{ZipCode}",
   "CityName": "",
   "PreferredDay": 0
 }
@@ -34,13 +42,10 @@ def search(Global_Scores_inp):
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     list_data = json.loads( r.content.decode("utf-8") )
 
-# for data in list_data:
-#     print(data)
-
-    Name = []
-    Distance = []
-    Date = []
-    Scores = []
+    Name =      []
+    Distance =  []
+    Date =      []
+    Scores =    []
 
     for location in list_data:
         Score = 50
