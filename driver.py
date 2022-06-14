@@ -1,90 +1,87 @@
-# Apply for first time Texas CLP/CDL - TypeId = 71
-# Change, replace or renew Texas DL/Permit - TypeId = 81
-# Class C Road Skills Test - TypeId = 21
-TypeId = 71
-ZipCode = 76036
+import requests            # make the api request
+import json                # parse the data
+import pandas as pd        # graph the data
+import time                # delay
+import os                  # open local file
+from datetime import datetime  # compare how long its been
+
+# Apply for first time Texas CLP/CDL -          TypeId = 71
+# Change, replace or renew Texas DL/Permit -    TypeId = 81
+# Class C Road Skills Test -                    TypeId = 21
+TypeId = 71       # ^^^
+ZipCode = 76036   # How far from here
+tdRatio = 1      # Time/Distance ratio | days per mile
 
 
-import requests
-import pandas as pd
-import json
-import time
-import os
+def request(TypeId=TypeId, ZipCode=ZipCode):
+    """Requests from the DMV api.
+    Takes in the TypeId and ZipCode.
+    Returns a list of all locations
+    that are availible right now.
+    """
+    locations = requests.post(
+        url="https://publicapi.txdpsscheduler.com/api/AvailableLocation",
+        data=json.dumps({"TypeId": TypeId,
+                         "ZipCode": f"{ZipCode}",
+                         "CityName": "",
+                         "PreferredDay": 0}),
+        headers={"Origin": "https://public.txdpsscheduler.com"})
+    return json.loads(locations.content.decode("utf-8"))
 
 
-url = 'https://publicapi.txdpsscheduler.com/api/AvailableLocation'
-
-payload = {
-  "TypeId": TypeId,
-  "ZipCode": f"{ZipCode}",
-  "CityName": "",
-  "PreferredDay": 0
-}
-headers = {
-"Accept": "application/json, text/plain, */*",
-"Accept-Encoding": "gzip, deflate, br",
-"Accept-Language": "en-US,en;q=0.9",
-"Connection": "keep-alive",
-"Content-Length": "62",
-"Content-Type": "application/json;charset=UTF-8",
-"DNT": "1",
-"Host": "publicapi.txdpsscheduler.com",
-"Origin": "https://public.txdpsscheduler.com",
-"Referer": "https://public.txdpsscheduler.com/",
-"Sec-Fetch-Dest": "empty",
-"Sec-Fetch-Mode": "cors",
-"Sec-Fetch-Site": "same-site",
-"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.234"
-}
-Global_Scores = []
-
-def search(Global_Scores_inp):
-    r = requests.post(url, data=json.dumps(payload), headers=headers)
-    list_data = json.loads( r.content.decode("utf-8") )
-
-    Name =      []
-    Distance =  []
-    Date =      []
-    Scores =    []
-
-    for location in list_data:
-        Score = 50
-        if location["NextAvailableDateYear"] == '2020':
-            Score -= int( float(location['NextAvailableDateMonth']) * 2 - 20 )
-            Score -= int( float(location['NextAvailableDateDay']) * 6.6 / 100 )
-        elif location["NextAvailableDateYear"] == '2021':
-            Score -= int( float(location['NextAvailableDateMonth']) * 2 + 5 )
-            Score -= int( float(location['NextAvailableDateDay']) * 6 / 100 )
-        Score -= int(location["Distance"])
-        
-        Scores.append(   Score)
-        Name.append(     location["Name"])
-        Distance.append( int(location["Distance"]))
-        Date.append(     location["NextAvailableDate"])
-
-    data = {'Name': Name,'Distance': Distance, "Date": Date, "Score": Scores}
-    df = pd.DataFrame(data)
-    df = df.sort_values(by=["Score"], ascending=False)
-
-    if Scores != Global_Scores_inp:
-        print("\n")
-        print(df)
-        print("\n")
-        os.system('"C:/Program Files (x86)/K-Lite Codec Pack/MPC-HC64/mpc-hc64.exe" sms-alert-4-daniel_simon.mp3 /play /close /minimized')
-        Global_Scores_out = Scores
-        return Global_Scores_out
-    elif Scores == Global_Scores_inp:
-        if counter % 10 == 0:
-            print(f"#{str(int(counter/10)).zfill(5)} | SAME :( | Best Score: {df.iloc[0, 3]}", end='\r')
+def parse(locations: list, tdRatio=tdRatio):
+    """Parses the reqest.
+    Takes in the locations and tdRatio.
+    Returns the lists: name,
+    distance, date, days, and score.
+    """
+    name, distance, date, days, score = [], [], [], [], []
+    for location in locations:
+        name.    append(location["Name"])
+        distance.append(location["Distance"])
+        date.    append(location["NextAvailableDate"])
+        delta = datetime(int(location["NextAvailableDateYear"]),
+                         int(location["NextAvailableDateMonth"]),
+                         int(location["NextAvailableDateDay"])
+                         ) - datetime.now()
+        days.    append(delta.days)
+        score.   append(100 - (tdRatio*delta.days+int(location["Distance"])))
+    return name, distance, date, days, score
 
 
-counter = 0
+def graph(name: list, distance: list, date: list, days: list, score: list):
+    """Graphs the locations on pandas.
+    Takes in the name, distance, date, and score.
+    Returns the sorted pandas dataframe.
+    """
+    data = {"Name": name, "Distance": distance, "Date": date,
+            "Days": days, "Score": score}
+    dataframe = pd.DataFrame(data)
+    dataframe = dataframe.sort_values(by=["Score"], ascending=False)
+    return dataframe
 
-while True: 
-    counter += 1
-    Global_Scores_new = search(Global_Scores)
-    if Global_Scores_new == None:
-        Global_Scores_new = Global_Scores
-    if Global_Scores_new != Global_Scores:
-        Global_Scores = Global_Scores_new
-    time.sleep(1)
+
+def update(counter, current_score):
+    """
+    foo bar
+    """
+    name, distance, date, days, score = parse(request(), tdRatio)
+    if current_score == score:
+        print(f"#{str(counter).zfill(5)} | SAME :( | Best Score: {max(score)}",
+              end="\r")
+        counter += 1
+        return counter, score
+    else:
+        print(graph(name, distance, date, days, score))
+        os.system('''
+        "C:/Program Files (x86)/K-Lite Codec Pack/MPC-HC64/mpc-hc64.exe"\
+         sms-alert-4-daniel_simon.mp3 /play /close /minimized''')
+        return counter, score
+
+
+if __name__ == "__main__":
+    counter = 0
+    current_score = []
+    while True:
+        counter, current_score = update(counter, current_score)
+        time.sleep(1)
