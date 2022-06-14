@@ -10,7 +10,7 @@ from datetime import datetime  # compare how long its been
 # Class C Road Skills Test -                    TypeId = 21
 TypeId = 71       # ^^^
 ZipCode = 76036   # How far from here
-dtRatio = 1.5      # Time/Distance ratio | days per mile
+dtRatio = 1.5     # Time/Distance ratio | days per mile
 
 
 def request(TypeId=TypeId, ZipCode=ZipCode):
