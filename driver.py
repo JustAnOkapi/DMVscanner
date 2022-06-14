@@ -10,7 +10,7 @@ from datetime import datetime  # compare how long its been
 # Class C Road Skills Test -                    TypeId = 21
 TypeId = 71       # ^^^
 ZipCode = 76036   # How far from here
-tdRatio = 1      # Time/Distance ratio | days per mile
+dtRatio = 1.5      # Time/Distance ratio | days per mile
 
 
 def request(TypeId=TypeId, ZipCode=ZipCode):
@@ -29,9 +29,9 @@ def request(TypeId=TypeId, ZipCode=ZipCode):
     return json.loads(locations.content.decode("utf-8"))
 
 
-def parse(locations: list, tdRatio=tdRatio):
+def parse(locations: list, dtRatio=dtRatio):
     """Parses the reqest.
-    Takes in the locations and tdRatio.
+    Takes in the locations and dtRatio.
     Returns the lists: name,
     distance, date, days, and score.
     """
@@ -45,7 +45,8 @@ def parse(locations: list, tdRatio=tdRatio):
                          int(location["NextAvailableDateDay"])
                          ) - datetime.now()
         days.    append(delta.days)
-        score.   append(100 - (tdRatio*delta.days+int(location["Distance"])))
+        score.   append(int(100 -
+                        (delta.days + dtRatio*int(location["Distance"]))))
     return name, distance, date, days, score
 
 
@@ -62,17 +63,19 @@ def graph(name: list, distance: list, date: list, days: list, score: list):
 
 
 def update(counter, current_score):
+    """Calls and checks for changes.
+    Takes in the counter and current_score.
+    Prints if there has been a change and
+    returns the latest score list.
     """
-    foo bar
-    """
-    name, distance, date, days, score = parse(request(), tdRatio)
+    name, distance, date, days, score = parse(request(), dtRatio)
     if current_score == score:
-        print(f"#{str(counter).zfill(5)} | SAME :( | Best Score: {max(score)}",
+        print(f"#{str(counter).zfill(6)} | SAME :( | Best Score: {max(score)}",
               end="\r")
         counter += 1
         return counter, score
     else:
-        print(graph(name, distance, date, days, score))
+        print("\n", graph(name, distance, date, days, score))
         os.system('''
         "C:/Program Files (x86)/K-Lite Codec Pack/MPC-HC64/mpc-hc64.exe"\
          sms-alert-4-daniel_simon.mp3 /play /close /minimized''')
