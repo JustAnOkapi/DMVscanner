@@ -1,1 +1,0 @@
-py "%HOMEPATH%\Documents\GitHub\DMVscanner\driver.py"
