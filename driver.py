@@ -72,7 +72,7 @@ def graph(name: list, distance: list, date: list, days: list, score: list):
     for i in range(len(days)):
         dpg.set_item_label(f'location{i}', name[i])
         graph_data = dpg.get_value(f'location{i}')
-        graph_data[0].append((datetime.now() - start_time).seconds)
+        graph_data[0].append((datetime.now() - start_time).seconds/60)
         graph_data[1].append(days[i])
         dpg.set_value(f'location{i}', graph_data)
         dpg.set_axis_limits('y_axis', -10.0, 200.0)
@@ -240,11 +240,11 @@ def create_graph_gui():
             dpg.add_plot_legend()
             dpg.add_plot_axis(dpg.mvXAxis,
                               tag='x_axis',
-                              label='Runtime',
+                              label='Runtime (Minutes)',
                               no_gridlines=True)
             with dpg.plot_axis(dpg.mvYAxis,
                                tag='y_axis',
-                               label='Days',
+                               label='Days (Till Appointment)',
                                no_gridlines=False):
                 for i in range(5):
                     dpg.add_stair_series([], [], tag=f'location{i}')
