@@ -22,16 +22,25 @@ def request():
         var_typeid = 81
     elif var_typeid == 'Class C Road Skills Test':
         var_typeid = 21
-    locations = requests.post(
-        url='https://publicapi.txdpsscheduler.com/api/AvailableLocation',
-        data=json.dumps({
-            'TypeId': var_typeid,
-            'ZipCode': f'{var_zipcode}',
-            'CityName': '',
-            'PreferredDay': 0
-        }),
-        headers={'Origin': 'https://public.txdpsscheduler.com'})
-    return json.loads(locations.content.decode('utf-8'))
+    errored = True
+    while errored:
+        try:
+            locations = requests.post(
+                url='https://publicapi.txdpsscheduler.com/api/AvailableLocation',
+                data=json.dumps({
+                    'TypeId': var_typeid,
+                    'ZipCode': f'{var_zipcode}',
+                    'CityName': '',
+                    'PreferredDay': 0
+                }),
+                headers={'Origin': 'https://public.txdpsscheduler.com'}, timeout=30)
+            errored = False
+            print(f"Errored {errored}")
+            return json.loads(locations.content.decode('utf-8'))
+        except Exception as f:
+            print(f"Errored {errored} {f}")
+            print_console(False, "Error Connecting to API")
+            time.sleep(5)
 
 
 def parse(locations: list):
@@ -78,6 +87,7 @@ def graph(name: list, distance: list, date: list, days: list, score: list, count
         dpg.set_axis_limits('y_axis', -10.0, 200.0)
         dpg.set_axis_limits('x_axis', graph_data[0][0] - 1,
                             graph_data[0][-1] + 10)
+        # dpg.set_axis_limits_auto("x_axis")
     dataframe = pd.DataFrame(data)
     dataframe = dataframe.sort_values(by=['Score'], ascending=False)
     return dataframe
@@ -94,11 +104,11 @@ def update(counter, current_score):
         print_console(
             False,
             f'#{str(counter).zfill(6)} | SAME | Best Score: {max(score)} \r')
+        graph(name, distance, date, days, score, counter)
         counter += 1
         return counter, score
     else:
-        print_console(True,
-                      f'{str(graph(name, distance, date, days, score, counter))}\n\n')
+        print_console(True, f'{str(graph(name, distance, date, days, score, counter))}\n\n')
         play_sound()
         return counter, score
 
