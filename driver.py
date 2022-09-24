@@ -86,7 +86,7 @@ def graph(name: list, distance: list, date: list, days: list, score: list, count
         dpg.set_value(f'location{i}', graph_data)
         dpg.set_axis_limits('y_axis', -10.0, 200.0)
         dpg.set_axis_limits('x_axis', graph_data[0][0] - 1,
-                            graph_data[0][-1] + 10)
+                            graph_data[0][-1]*1.01)
         # dpg.set_axis_limits_auto("x_axis")
     dataframe = pd.DataFrame(data)
     dataframe = dataframe.sort_values(by=['Score'], ascending=False)
@@ -296,8 +296,11 @@ def update_loop():
     Skips if var_paused is true.
     Sleeps for var_sleep seconds
     """
-    counter = 0
-    current_score = []
+    try:
+        counter
+    except NameError:
+        counter = 0
+        current_score = []
     while not dpg.get_value('var_paused'):
         counter, current_score = update(counter, current_score)
         time.sleep(dpg.get_value('var_sleep'))
