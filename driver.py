@@ -22,6 +22,8 @@ def request():
         var_typeid = 81
     elif var_typeid == 'Class C Road Skills Test':
         var_typeid = 21
+    elif var_typeid == 'Apply for first time Texas ID':
+        var_typeid = 72
     errored = True
     while errored:
         try:
@@ -132,7 +134,7 @@ def setup_gui():
     Font, theme, items, and values are created.
     """
     dpg.create_context()
-    dpg.create_viewport(title='DMVscanner', width=1050, height=900)
+    dpg.create_viewport(title='DMVscanner', width=1025, height=920)
     dpg.setup_dearpygui()
     dpg.add_font_registry(tag='font reg')
     SourceSans = dpg.add_font('SourceSansPro-Regular.ttf',
@@ -175,7 +177,7 @@ def create_settings_gui():
     with dpg.window(tag='Settings',
                     label='Settings',
                     min_size=(400, 200),
-                    pos=(600, 15)):
+                    pos=(600, 10)):
         dpg.add_checkbox(label='Paused',
                          source='var_paused',
                          callback=update_loop)
@@ -183,7 +185,8 @@ def create_settings_gui():
         dpg.add_radio_button(items=[
             'Apply for first time Texas DL/Permit',
             'Change, replace or renew Texas DL/Permit',
-            'Class C Road Skills Test'
+            'Class C Road Skills Test',
+            'Apply for first time Texas ID'
         ],
                              indent=20,
                              source='var_typeid')
@@ -245,7 +248,7 @@ def create_graph_gui():
     with dpg.window(tag='Graph',
                     label='Graph',
                     min_size=(400, 200),
-                    pos=(600, 315)):
+                    pos=(600, 335)):
         with dpg.plot(height=500, width=-1):
             dpg.add_plot_legend()
             dpg.add_plot_axis(dpg.mvXAxis,
